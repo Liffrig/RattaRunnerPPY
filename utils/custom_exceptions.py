@@ -1,0 +1,4 @@
+
+class SquareWillBeClosedError(Exception):
+	pass
+
