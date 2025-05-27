@@ -8,10 +8,17 @@ from utils.random_engine import labyrinth_architect
 
 def main() -> None:
     print("start")
-    g = labyrinth_architect(7)
-    g.send(None)
-    print(g.send([5,6]))
-    print(g.send([1, 2]))
+    test_lab = Labyrinth(2,3)
+    g = labyrinth_architect(set([x for x in range(test_lab.size)]))
+
+
+    for i in g:
+        print(f"***{i}***")
+        w = test_lab.get_surrounding_indexes(test_lab[i])
+        print(f"{w=}  ")
+        first_sq = g.send(w)
+        print(f"{first_sq=}  ")
+
 
 
 if __name__ == "__main__":

@@ -1,15 +1,11 @@
-from typing import List, Generator
+from typing import Set, Generator, Optional
 from random import choice
 
-def labyrinth_architect(free_properties: List[int] | int) -> Generator[int, None, None]:
-	where_to_build = None
-	possible_positions = None
-	while True:
-		if type(free_properties) == int:
-			possible_positions = [x for x in range(free_properties)]
-			where_to_build = yield choice(possible_positions)
+def labyrinth_architect(full_list: Set[int]) -> Generator[int, None, None]:
+	exclude_list: Optional[Set[int]] = None
+	while full_list:
+		if exclude_list is not None:
+			full_list -= set(exclude_list)
+			exclude_list = yield choice(list(full_list))
 		else:
-			possible_positions  -= free_properties
-			where_to_build = yield choice(possible_positions)
-
-		print(possible_positions)
+			exclude_list = yield choice(list(full_list))
