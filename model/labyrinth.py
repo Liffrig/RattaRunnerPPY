@@ -90,3 +90,18 @@ class Labyrinth(Iterable):
         # append also the center square
         surroundings.append(center)
         return surroundings
+
+    def get_next_square(self,direction: Direction, square: Square) -> Optional[Square]:
+        surroundings: List[int] = self.get_surrounding_indexes(square)
+        try:
+            return self.__fields[surroundings[direction.value]]
+        except IndexError:
+            return None
+
+    def _get_square_on(self, row:int, column:int) -> Optional[Square]:
+
+        for square in self.__fields:
+            if square.row == row and square.column == column:
+                return square
+
+        return None
