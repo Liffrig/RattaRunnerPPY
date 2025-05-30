@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Literal
 from enum import Enum
 
 class Direction(Enum):
@@ -8,8 +9,9 @@ class Direction(Enum):
     LEFT = 3
 
     @classmethod
-    def get_opposite(cls, direction: Direction) -> Literal[
-	                                                   Direction.RIGHT, Direction.LEFT, Direction.DOWN, Direction.UP] | None:
+    def get_opposite(cls, direction: Direction) \
+            -> Literal[Direction.RIGHT, Direction.LEFT, Direction.DOWN, Direction.UP] | None:
+
         match direction:
             case Direction.UP:
                 return Direction.DOWN
@@ -20,3 +22,5 @@ class Direction(Enum):
             case Direction.LEFT:
                 return Direction.RIGHT
         return None
+
+

@@ -7,7 +7,7 @@ from utils.custom_exceptions import SquareWillBeClosedError
 
 
 class ModelTests(unittest.TestCase):
-
+# TODO fix old tests
     def test_square_ini(self):
         square = Square(1,2)
         self.assertEqual(square.row, 1)
