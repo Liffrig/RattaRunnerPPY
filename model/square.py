@@ -23,7 +23,11 @@ class Square:
         self.__sequence:int = sequence
 
         self.is_first = True if sequence == 0 else False
-        self.is_last = True if sequence == self.what_labyrinth.size - 1 else False
+
+        self.is_last = True if (what_labyrinth is None) or (sequence == self.what_labyrinth.size - 1) else False
+
+        self.row = sequence // what_labyrinth.max_columns
+        self.col = sequence % what_labyrinth.max_columns
 
 
     def build_wall(self, direction: Direction) -> None:
@@ -50,10 +54,3 @@ class Square:
 
     def move_to(self, direction: Direction) -> Optional[Square]:
         return self.connected_squares[direction]
-
-    def __repr__(self):
-        if self.is_first:
-            return '🯅'
-        elif self.is_last:
-            return '🮱'
-        return ' '

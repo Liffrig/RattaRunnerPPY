@@ -1,4 +1,5 @@
 import unittest
+from itertools import count
 
 from model.direction import Direction
 from model.labyrinth import Labyrinth
@@ -9,10 +10,12 @@ from utils.custom_exceptions import SquareWillBeClosedError
 class ModelTests(unittest.TestCase):
 # TODO fix old tests
     def test_square_ini(self):
-        square = Square(1,2)
-        self.assertEqual(square.row, 1)
-        self.assertEqual(square.column, 2)
-        self.assertEqual([0,0,0,0], square._walls)
+        square = Square(0)
+        self.assertTrue(square.is_first)
+        self.assertTrue(square.is_last)
+        self.assertEqual(
+            list(filter(lambda x : x is None, square.connected_squares.values())),
+            [None,None,None,None])
     
     def test_walls(self):
         square = Square(1,1)

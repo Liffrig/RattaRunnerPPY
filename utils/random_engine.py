@@ -31,3 +31,7 @@ def labyrinth_architect(full_list: Set[int]) -> Generator[int, None, None]:
 def random_direction_generator() -> Generator[Direction, None, None]:
 	while True:
 		yield Direction(randint(0, 3))
+
+
+def choose_in_range(range:int) -> int:
+	return randint(0, range)

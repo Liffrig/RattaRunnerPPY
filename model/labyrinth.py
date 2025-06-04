@@ -3,6 +3,9 @@ from collections.abc import Iterable
 from typing import Iterator, Optional, List, TYPE_CHECKING, Set
 from model.direction import Direction
 from model.square import Square
+from utils.misc_utils import check_labyrinth_solution
+from utils.random_engine import labyrinth_architect, random_direction_generator
+
 
 # if TYPE_CHECKING:
 #     from model.square import Square
@@ -77,3 +80,32 @@ class Labyrinth(Iterable):
             raise IndexError("sequence out of range")
 
         return square
+
+    def _construct_random_walls(self) -> None:
+        sq_gen = labyrinth_architect(set([x for x in range(self.size)]))
+        rdg = random_direction_generator()
+        seq_i = next(sq_gen)
+
+        for i in range(self._max_columns * 4):
+            drawn_sq = self.get_square_by_sequence(seq_i)
+            nbrs = self.get_surrounding_indexes(drawn_sq)
+            drawn_dir = next(rdg)
+            disjoint_sq = drawn_sq.move_to(drawn_dir)
+            drawn_sq.build_wall(drawn_dir)
+            if check_labyrinth_solution(drawn_sq):
+                try:
+                    seq_i = sq_gen.send(nbrs)
+                except StopIteration:
+                    break
+            else:
+                # rollback
+                drawn_sq.link_to_square(drawn_dir, disjoint_sq)
+                break
+
+    @property
+    def max_columns(self):
+        return self._max_columns
+
+    @property
+    def max_rows(self):
+        return self._max_rows
