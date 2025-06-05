@@ -1,4 +1,4 @@
-from typing import Set, Generator, Optional
+from typing import Set, Generator, Optional, List, Tuple
 from random import choice, randint
 from functools import wraps
 from model.direction import Direction
@@ -33,5 +33,15 @@ def random_direction_generator() -> Generator[Direction, None, None]:
 		yield Direction(randint(0, 3))
 
 
-def choose_in_range(range:int) -> int:
-	return randint(0, range)
+def roll_dice(range:int, lower:int = 0) -> int:
+	return randint(lower, range)
+
+
+def choose_stats(pool: List[float]) -> List[float]:
+	ret_pool: List[float] = []
+	size = len(pool)
+	third = size // 3
+	ret_pool.append(choice(pool[:third]))
+	ret_pool.append(choice(pool[third:third*2]))
+	ret_pool.append(choice(pool[third*2:]))
+	return ret_pool

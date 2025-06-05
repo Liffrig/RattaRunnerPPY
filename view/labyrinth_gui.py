@@ -1,10 +1,16 @@
 import tkinter as tk
-from typing import Tuple, Dict
-
+from typing import Tuple, Dict, Optional, TYPE_CHECKING
 from model.labyrinth import Labyrinth
+
 from model.direction import Direction
 from utils.misc_utils import BASE_SETTINGS
-from utils.random_engine import choose_in_range
+from utils.random_engine import roll_dice
+
+if TYPE_CHECKING:
+	from view.mouse_gui import MouseGUI
+	from model.labyrinth import Labyrinth
+
+
 
 
 class LabyrinthGUI(Labyrinth):
@@ -17,19 +23,15 @@ class LabyrinthGUI(Labyrinth):
 		self.wall_width: int = BASE_SETTINGS["wall_width"]
 		self.animation_steps: int = BASE_SETTINGS["animation_steps"]
 
-		self.mouse_model: tk.PhotoImage = tk.PhotoImage(file=f"./asset/mouse{choose_in_range(10)}.png")
-		image_size:int = int(self.cell_size * BASE_SETTINGS["image_size"])
-		self.mouse_model = self.mouse_model.subsample(
-			max(1, self.mouse_model.width() // image_size),
-			max(1, self.mouse_model.height() // image_size)
-		)
 
 		canvas_width: float = self.max_columns * self.cell_size + BASE_SETTINGS["canvas_padding"]
 		canvas_height: float = self.max_rows * self.cell_size + BASE_SETTINGS["canvas_padding"]
 		self.canvas = tk.Canvas(self.root, width=canvas_width, height=canvas_height, bg='aliceblue')
 		self.canvas.pack(padx=10, pady=10) # żeby działało
 
+		self.hero: Optional[MouseGUI] = None
 		self.draw()
+
 
 	def draw(self):
 		self.canvas.delete("all")
@@ -60,4 +62,19 @@ class LabyrinthGUI(Labyrinth):
 
 			for direction, coords in wall_lines.items():
 				if sq.check_wall(direction):
-					self.canvas.create_line(*coords, fill='black', width=self.wall_width)
+					self.canvas.create_line(*coords, fill='black', width=self.wall_width, smooth=True)
+
+
+		self.draw_hero()
+
+	def draw_hero(self):
+		if self.hero is None:
+			return
+
+		row = self.hero.square_on.row + 1
+		col = self.hero.square_on.col + 1
+
+		x = (col * self.cell_size) // 2
+		y = (row * self.cell_size) // 2
+
+		self.canvas.create_image(x,y, image = self.hero.mouse_image)

@@ -2,13 +2,14 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Iterator, Optional, List, TYPE_CHECKING, Set
 from model.direction import Direction
-from model.square import Square
 from utils.misc_utils import check_labyrinth_solution
 from utils.random_engine import labyrinth_architect, random_direction_generator
+from model.square import Square
+from model.mouse import Mouse
 
-
-# if TYPE_CHECKING:
-#     from model.square import Square
+if TYPE_CHECKING:
+    from model.square import Square
+    from model.mouse import Mouse
 
 
 class Labyrinth(Iterable):
@@ -43,11 +44,13 @@ class Labyrinth(Iterable):
 
         self.start: Square = self.get_square_by_sequence(0)
 
+        self.hero: Optional[Mouse] = None
 
-    def __iter__(self) -> Iterator[Optional[Square]]:
+
+    def __iter__(self) -> Iterator[Optional['Square']]:
         return iter(self.__fields)
 
-    def __getitem__(self, index: int) -> Optional[Square]:
+    def __getitem__(self, index: int) -> Optional['Square']:
         return self.__fields[index]
 
     def __repr__(self) -> str:
@@ -61,9 +64,9 @@ class Labyrinth(Iterable):
 
         return result
 
-    def get_surrounding_indexes(self, element: Square | int) -> Set[int]:
+    def get_surrounding_indexes(self, element: 'Square' | int) -> Set[int]:
         surroundings = set()
-        square: Square = self.get_square_by_sequence(element) if type(element) == int else element
+        square = self.get_square_by_sequence(element) if type(element) == int else element
 
         for direction in Direction:
             if not square.check_wall(direction):
@@ -73,7 +76,7 @@ class Labyrinth(Iterable):
         return surroundings
 
 
-    def get_square_by_sequence(self, sequence:int) -> Square:
+    def get_square_by_sequence(self, sequence:int) -> 'Square':
         try:
             square = self.__fields[sequence]
         except IndexError:
@@ -109,3 +112,8 @@ class Labyrinth(Iterable):
     @property
     def max_rows(self):
         return self._max_rows
+
+    def link(self, mouse: 'Mouse') -> None:
+        if self.hero is None:
+            self.hero = mouse
+            mouse.link(self)
