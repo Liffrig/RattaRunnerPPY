@@ -5,7 +5,7 @@ from model.direction import Direction
 
 
 BASE_SETTINGS: Dict[str, int|float] = {
-	'cell_size': 120,
+	'cell_size': 150,
 	'wall_width': 10,
 	'animation_steps': 50,
 	'image_size': 0.75,
@@ -13,10 +13,6 @@ BASE_SETTINGS: Dict[str, int|float] = {
 	'square_padding': 10,
 	'abilities_base_mult': 30
 }
-
-
-
-
 
 
 
@@ -40,4 +36,6 @@ def check_labyrinth_solution(start_square: Square) -> bool:
 				queue.append(next_square)
 
 	return False
+
+
 

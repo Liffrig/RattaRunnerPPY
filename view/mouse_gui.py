@@ -19,7 +19,6 @@ class MouseGUI(Mouse):
 		super().__init__(appearance_id , abilities_pref)
 		self.mouse_image = PhotoImage(file=self.model_path)
 
-		image_size: int = BASE_SETTINGS["image_size"]
 
 
 		image_size:int = int(BASE_SETTINGS['cell_size'] * BASE_SETTINGS["image_size"])

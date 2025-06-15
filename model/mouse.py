@@ -23,6 +23,7 @@ class Mouse:
 		self._stamina = stat_pool[abilities_pref['stamina']]
 
 		self.square_on: Optional[Square] = None
+		self._path_chosen: Optional[List[Square]] = None
 
 
 	def _roll_stat_pool(self) -> List[float]:
@@ -41,7 +42,15 @@ class Mouse:
 	def link(self, labyrinth: "Labyrinth") -> None:
 		if self.square_on is None:
 			self.square_on = labyrinth.start
+			self._path_chosen = labyrinth.choose_path_for_mouse(self.smartness)
 			labyrinth.link(self)
+
+	def move_to(self, direction) -> None:
+
+		next_square = self.square_on.move_to(direction)
+		if not next_square:
+			return
+		self.square_on = next_square
 
 
 	@property

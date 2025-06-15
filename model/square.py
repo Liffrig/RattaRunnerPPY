@@ -29,6 +29,8 @@ class Square:
         self.row = sequence // what_labyrinth.max_columns
         self.col = sequence % what_labyrinth.max_columns
 
+    def __repr__(self) -> str:
+        return f"[{self.__sequence}]"
 
     def build_wall(self, direction: Direction) -> None:
         if self.check_wall(direction):

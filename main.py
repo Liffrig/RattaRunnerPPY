@@ -10,19 +10,16 @@ from utils.random_engine import labyrinth_architect, random_direction_generator
 from view.labyrinth_gui import LabyrinthGUI
 from view.mouse_gui import MouseGUI
 
-
 def main() -> None:
 
-    for i in range(10):
-        lg = LabyrinthGUI(4,4)
-        lg._construct_random_walls()
 
-        ab = {'smartness':0, "speed":1, "stamina":2}
-        m = MouseGUI(i,ab,lg)
-        lg.draw()
-        lg.root.mainloop()
-        sleep(1)
+    lg = LabyrinthGUI(8,8)
+    lg._construct_random_walls()
 
+    ab = {'smartness':0, "speed":1, "stamina":2}
+    m = MouseGUI(3,ab,lg)
+    lg.draw()
+    lg.root.mainloop()
 
 
 
@@ -33,6 +30,16 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
+
+
+
+
 
 
 # TODO

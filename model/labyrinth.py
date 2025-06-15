@@ -6,6 +6,9 @@ from utils.misc_utils import check_labyrinth_solution
 from utils.random_engine import labyrinth_architect, random_direction_generator
 from model.square import Square
 from model.mouse import Mouse
+from collections import deque
+from typing import List, Tuple
+from random import choice
 
 if TYPE_CHECKING:
     from model.square import Square
@@ -43,8 +46,10 @@ class Labyrinth(Iterable):
                 continue
 
         self.start: Square = self.get_square_by_sequence(0)
+        self.finish: Square = self.get_square_by_sequence(self.size - 1)
 
         self.hero: Optional[Mouse] = None
+        self.solutions:List[List[Square]] = self.find_x_best_paths(10)
 
 
     def __iter__(self) -> Iterator[Optional['Square']]:
@@ -89,21 +94,85 @@ class Labyrinth(Iterable):
         rdg = random_direction_generator()
         seq_i = next(sq_gen)
 
-        for i in range(self._max_columns * 4):
+        for i in range(self._max_columns * 5):
             drawn_sq = self.get_square_by_sequence(seq_i)
             nbrs = self.get_surrounding_indexes(drawn_sq)
             drawn_dir = next(rdg)
-            disjoint_sq = drawn_sq.move_to(drawn_dir)
+            disjoint_sq = drawn_sq.move_to(drawn_dir) #dla rollback może być potrzebny
             drawn_sq.build_wall(drawn_dir)
-            if check_labyrinth_solution(drawn_sq):
+            if check_labyrinth_solution(self.start):
                 try:
-                    seq_i = sq_gen.send(nbrs)
+                    # seq_i = sq_gen.send(nbrs)
+                    seq_i = sq_gen.send(set([drawn_sq.get_sequence()]))
                 except StopIteration:
                     break
             else:
                 # rollback
                 drawn_sq.link_to_square(drawn_dir, disjoint_sq)
-                break
+                continue
+
+    def find_x_best_paths(self, x: int) -> List[List[Square]]:
+        """
+		Find the x shortest paths from start_square to the finish square.
+
+		Args:
+			start_square: The starting square of the labyrinth
+			x: Number of best paths to return
+
+		Returns:
+			List of paths, where each path is a list of Square objects.
+			Paths are sorted from shortest to longest.
+		"""
+
+        # Queue stores tuples of (current_square, path_to_current_square)
+        queue = deque([(self.start , [self.start])])
+        visited_paths = {}  # square -> shortest_distance_to_reach_it
+        all_paths = []
+
+        while queue and len(all_paths) < x:
+            current_square, current_path = queue.popleft()
+
+            # Skip if we've found a shorter path to this square
+            current_distance = len(current_path)
+            if current_square in visited_paths and visited_paths[current_square] < current_distance:
+                continue
+
+            # Explore all possible directions
+            for direction in Direction:
+                next_square = current_square.move_to(direction)
+
+                if next_square is None:
+                    continue
+
+                new_path = current_path + [next_square]
+                new_distance = len(new_path)
+
+                # If we reached the finish, add this as a complete path
+                if next_square.is_last:
+                    all_paths.append(new_path)
+                    continue
+
+                # Only continue exploring if we haven't visited this square with a shorter path
+                if next_square not in visited_paths or visited_paths[next_square] >= new_distance:
+                    visited_paths[next_square] = new_distance
+                    queue.append((next_square, new_path))
+
+        # Sort paths by length and return the x shortest ones
+        all_paths.sort(key=len)
+        return all_paths[:x]
+
+
+
+    def choose_path_for_mouse(self, smartness: float) -> List[Square]:
+        cut_of = int(len(self.solutions) * smartness)
+
+        if cut_of == 0:
+            return choice(self.solutions)
+        else:
+            return choice(self.solutions[:-cut_of])
+
+
+
 
     @property
     def max_columns(self):
