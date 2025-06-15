@@ -62,3 +62,7 @@ class Mouse:
 	@property
 	def stamina(self) -> float:
 		return self._stamina
+
+	@property
+	def path_chosen(self) -> List['Square']:
+		return self._path_chosen

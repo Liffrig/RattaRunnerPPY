@@ -49,6 +49,7 @@ class Labyrinth(Iterable):
         self.finish: Square = self.get_square_by_sequence(self.size - 1)
 
         self.hero: Optional[Mouse] = None
+        self._construct_random_walls()
         self.solutions:List[List[Square]] = self.find_x_best_paths(10)
 
 
@@ -113,19 +114,19 @@ class Labyrinth(Iterable):
 
     def find_x_best_paths(self, x: int) -> List[List[Square]]:
         """
-		Find the x shortest paths from start_square to the finish square.
+        Find the x shortest paths from start_square to the finish square.
+        This method respects walls and only moves through valid passages.
 
-		Args:
-			start_square: The starting square of the labyrinth
-			x: Number of best paths to return
+        Args:
+            x: Number of best paths to return
 
-		Returns:
-			List of paths, where each path is a list of Square objects.
-			Paths are sorted from shortest to longest.
-		"""
+        Returns:
+            List of paths, where each path is a list of Square objects.
+            Paths are sorted from shortest to longest.
+        """
 
         # Queue stores tuples of (current_square, path_to_current_square)
-        queue = deque([(self.start , [self.start])])
+        queue = deque([(self.start, [self.start])])
         visited_paths = {}  # square -> shortest_distance_to_reach_it
         all_paths = []
 
@@ -137,10 +138,15 @@ class Labyrinth(Iterable):
             if current_square in visited_paths and visited_paths[current_square] < current_distance:
                 continue
 
-            # Explore all possible directions
+            # Explore all possible directions, but only if there's no wall
             for direction in Direction:
+                # Check if there's a wall in this direction
+                if current_square.check_wall(direction):
+                    continue  # Skip if there's a wall
+
                 next_square = current_square.move_to(direction)
 
+                # Additional safety check in case move_to returns None
                 if next_square is None:
                     continue
 

@@ -1,4 +1,4 @@
-from tkinter import PhotoImage, Canvas, Tk
+from tkinter import PhotoImage, Canvas, Tk, Frame, Button, LEFT, RIGHT
 from typing import Tuple, Dict, Optional, TYPE_CHECKING
 from model.labyrinth import Labyrinth
 
@@ -29,8 +29,14 @@ class LabyrinthGUI(Labyrinth):
 		self.canvas.pack(padx=10, pady=10) # żeby działało
 
 		self.hero: Optional[MouseGUI] = None
-		self.root.bind('<KeyPress>', self.on_key_press)
-		self.root.focus_set()  # Make sure window can receive key events
+
+		# Buttons
+		btn_frame = Frame(self.root)
+		btn_frame.pack(pady=10)
+		Button(btn_frame, text="Zapierdalaj", command=self.run_little_buddy).pack(side=LEFT, padx=5)
+		Button(btn_frame, text="Test", command=None).pack(side=LEFT, padx=5)
+
+
 		self.draw()
 
 
@@ -85,8 +91,6 @@ class LabyrinthGUI(Labyrinth):
 
 		x,y = self._calculate_mid_sq_position(sq)
 
-		print(x, y)
-
 		image_size:int = int(BASE_SETTINGS['cell_size'] * BASE_SETTINGS["image_size"])
 		self.cheese_image = self.finish_image.subsample(
 			max(1, self.finish_image.width() // image_size),
@@ -108,20 +112,65 @@ class LabyrinthGUI(Labyrinth):
 		y = (self.cell_size // 2) + (sq.row * self.cell_size) + BASE_SETTINGS["square_padding"]
 		return x, y
 
-	def on_key_press(self, event):
-		key = event.keysym.lower()
-		direction = None
 
-		if key == 'up' or key == 'w':
-			direction = Direction.UP
-		elif key == 'down' or key == 's':
-			direction = Direction.DOWN
-		elif key == 'left' or key == 'a':
-			direction = Direction.LEFT
-		elif key == 'right' or key == 'd':
-			direction = Direction.RIGHT
+	def animate_movement(self, from_pos: Square, to_pos: Square, callback=None) -> None:
+		self.is_moving = True
 
-		if direction:
-			self.hero.move_to(direction)
+		start_x, start_y = self._calculate_mid_sq_position(from_pos)
+		end_x, end_y =  self._calculate_mid_sq_position(to_pos)
 
-		self.draw()
+		# Animation parameters
+		move_time = 0.5  # Random time between 0.5s and 2s
+		step_delay = int(move_time * 1000 / self.animation_steps)  # Delay per step in ms
+
+		# Calculate step increments
+		dx = (end_x - start_x) / self.animation_steps
+		dy = (end_y - start_y) / self.animation_steps
+
+		def animate_step(step):
+			if step >= self.animation_steps:
+				# Animation complete
+				self.hero.square_on = to_pos
+				self.is_moving = False
+				self.draw()  # Final redraw to ensure correct position
+
+				if callback:
+					callback()
+				return
+
+			# Redraw everything except the player
+			self.draw(False)
+
+			# Calculate current position
+			current_x = start_x + dx * step
+			current_y = start_y + dy * step
+
+			self.canvas.create_image(current_x, current_y, image=self.hero.mouse_image)
+
+			# Schedule next step
+			self.root.after(step_delay, lambda: animate_step(step + 1))
+
+		animate_step(0)
+
+	def run_little_buddy(self):
+		"""Animate the mouse following its chosen path"""
+		if not self.hero or not self.hero.path_chosen:
+			return
+
+		def animate_next_step(step_index):
+			# Check if we've reached the end of the path
+			if step_index >= len(self.hero.path_chosen) - 1:
+				return
+
+			from_square = self.hero.path_chosen[step_index]
+			to_square = self.hero.path_chosen[step_index + 1]
+
+			# Animate movement to next square, with callback to continue the chain
+			self.animate_movement(
+				from_square,
+				to_square,
+				callback=lambda: animate_next_step(step_index + 1)
+			)
+
+		# Start the animation sequence
+		animate_next_step(0)

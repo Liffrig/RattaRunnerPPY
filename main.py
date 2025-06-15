@@ -13,8 +13,8 @@ from view.mouse_gui import MouseGUI
 def main() -> None:
 
 
-    lg = LabyrinthGUI(8,8)
-    lg._construct_random_walls()
+    lg = LabyrinthGUI(8,10)
+
 
     ab = {'smartness':0, "speed":1, "stamina":2}
     m = MouseGUI(3,ab,lg)
