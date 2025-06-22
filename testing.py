@@ -59,5 +59,7 @@ class ModelTests(unittest.TestCase):
         for i,square in enumerate(Labyrinth(2,2)):
             self.assertEqual(expected_results[i], square._walls)
 
+
+
 if __name__ == '__main__':
     unittest.main()

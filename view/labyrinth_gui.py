@@ -25,7 +25,7 @@ class LabyrinthGUI(Labyrinth):
 
 		canvas_width: float = self.max_columns * self.cell_size + BASE_SETTINGS["canvas_padding"]
 		canvas_height: float = self.max_rows * self.cell_size + BASE_SETTINGS["canvas_padding"]
-		self.canvas = Canvas(self.root, width=canvas_width, height=canvas_height, bg='aliceblue')
+		self.canvas = Canvas(self.root, width=canvas_width, height=canvas_height, bg='floralwhite')
 		self.canvas.pack(padx=10, pady=10) # żeby działało
 
 		self.hero: Optional[MouseGUI] = None
@@ -57,8 +57,8 @@ class LabyrinthGUI(Labyrinth):
 				# prawy dolny róg
 				x+self.cell_size,
 				y+self.cell_size,
-				fill="ivory3",
-				outline="white")
+				fill="floralwhite",
+				outline="gainsboro")
 
 			wall_lines: Dict[Direction, Tuple[int, int, int, int]] = {
 				Direction.UP: (x, y, x1, y),
@@ -69,7 +69,7 @@ class LabyrinthGUI(Labyrinth):
 
 			for direction, coords in wall_lines.items():
 				if sq.check_wall(direction):
-					self.canvas.create_line(*coords, fill='black', width=self.wall_width, smooth=True)
+					self.canvas.create_line(*coords, fill='gray1', width=self.wall_width, smooth=True)
 
 
 		self.draw_static_elem(self.finish)

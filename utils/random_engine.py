@@ -1,5 +1,5 @@
 from typing import Set, Generator, Optional, List, Tuple
-from random import choice, randint
+from random import choice, randint, sample
 from functools import wraps
 from model.direction import Direction
 
@@ -45,3 +45,7 @@ def choose_stats(pool: List[float]) -> List[float]:
 	ret_pool.append(choice(pool[third:third*2]))
 	ret_pool.append(choice(pool[third*2:]))
 	return ret_pool
+
+
+def get_k_uniques(up_range: int, k:int ) -> List[int]:
+	return sample(range(up_range), k)

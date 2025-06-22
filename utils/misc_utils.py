@@ -1,5 +1,5 @@
 from collections import deque
-from typing import Dict
+from typing import Dict, Tuple
 from model.square import Square
 from model.direction import Direction
 
@@ -14,6 +14,19 @@ BASE_SETTINGS: Dict[str, int|float] = {
 	'abilities_base_mult': 30
 }
 
+BUTTON_DESIGN: Dict[str,str|Tuple[str,int]] = {
+	'font' : ('Fira Code', 15),
+	'bg' : 'red',
+	'fg' : 'yellow',
+	'activebackground' : 'yellow',
+	'activeforeground' : 'red',
+}
+
+
+LABEL_DESIGN: Dict[str,str|Tuple[str,int]] = {
+	'bg' : 'white',
+	'font' : ('Fira Code', 12)
+}
 
 
 def check_labyrinth_solution(start_square: Square) -> bool:
